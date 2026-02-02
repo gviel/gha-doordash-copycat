@@ -52,7 +52,7 @@ jobs:
           set -e
           curl -sS -X POST \
             -H "Content-Type: application/json" \
-            -d '$PAYLOAD_FEE' \
+            -d $PAYLOAD_FEE \
             ${API_URL}/calculate-fee/ | tee response_fee.txt
           fee=$(cat response_fee.txt)
           echo "fee=$fee"
