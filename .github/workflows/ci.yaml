@@ -47,9 +47,10 @@ jobs:
       - name: Test API
         run: |
           set -e
-          curl -sS -o /dev/null -w "%output{response.txt}" $API_URL | tee http_code.txt
+          curl -sS -w "%output{response.txt}" $API_URL | tee http_code.txt
           msg=$(cat response.txt)
-          if [ "$msg" != "Welcome to the DoorDash Delivery Fee Service API"]; then
+          echo "$msg"
+          if [ "$msg" != "Welcome to the DoorDash Delivery Fee Service API" ]; then
             echo "Wrong banner for API" >&2
             exit 1
           else
