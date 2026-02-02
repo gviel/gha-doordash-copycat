@@ -1,0 +1,37 @@
+#    Trigger on push to main
+#    Build the Docker image
+#    Run the container
+#    Test all endpoints
+#    Stop and clean the container afterward
+
+name: My First Workflow
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test-api:
+    runs-on: ubuntu-slim
+    env:
+      TOTO: "toto"
+    #steps:
+    #  - name: Checkout repository
+    #    uses: actions/checkout@v4 # This action clones the content of the current repo into the remote runner
+    
+      #- name: Setup Python
+      #  uses: actions/setup-python@v5 # This action installs python (version below)
+      #  with:
+      #    python-version: "3.11"
+
+      #- name: Install dependencies
+      #  run: pip install -r requirements.txt # It installs all the necessary dependencies from requirements.txt
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --tag doordash/delivery-fee-service:$(date +%s)
+
+      - name: Run de l'image docker
+        run: |
+          docker run -d -p 8080:8080 doordash/delivery-fee-service
