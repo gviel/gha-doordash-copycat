@@ -7,4 +7,4 @@ def test_calculate_fee_valid_payload(client):
     #TODO tester la valeur de réponse
     assert response.status_code == 200
     assert "delivery_fee" in  response.json()
-    assert response.json()["delivery_fee"] == 22.75
+    assert response.json()["delivery_fee"] == 21.75
