@@ -38,7 +38,7 @@ jobs:
           set -e
           sleep 5
           curl -sS -w "%output{response.txt}" $API_URL | tee http_code.txt
-          msg=$(cat response.txt)
+          msg=$(cat response.txt | jq -r '.message')
           echo "$msg"
           if [ "$msg" != "Welcome to the DoorDash Delivery Fee Service API" ]; then
             echo "Wrong banner for API" >&2
@@ -77,6 +77,6 @@ jobs:
 
       - name: Show container logs (for debugging)
         if: always()
-        run: docker logs fee-service || true
+        run: docker logs delivery-fee-service || true
 
 
