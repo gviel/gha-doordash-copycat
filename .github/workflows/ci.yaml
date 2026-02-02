@@ -14,7 +14,10 @@ jobs:
   test-api:
     runs-on: ubuntu-slim
     env:
-      TOTO: "toto"
+      API_URL: "http://localhost:8080"
+      PAYLOAD_FEE: '{ "distance_km": 10.5, "weight_kg": 2.0}'
+
+
     #steps:
     #  - name: Checkout repository
     #    uses: actions/checkout@v4 # This action clones the content of the current repo into the remote runner
@@ -35,3 +38,33 @@ jobs:
       - name: Run de l'image docker
         run: |
           docker run -d -p 8080:8080 doordash/delivery-fee-service
+
+      - name: Test API 
+        run: |
+          set -e
+          curl -sS -o /dev/null -w "%output{response.txt}" $API_URL | tee http_code.txt
+          msg=$(cat response.txt)
+          if [ "$msg" != "Welcome to the DoorDash Delivery Fee Service API"]; then
+            echo "Wrong banner for API" >&2
+            exit 1
+          else
+            echo "API is up and running"
+          fi
+      
+      - name: Test calculate-fee
+        run: |
+          set -e
+          resp=$(curl -sS -X POST \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD_FEE"
+            -w "%output{response_fee.txt}" $API_URL/calculate-fee)
+          fee=$(echo $resp | jq -r '.delivery_fee')
+          if [ "$fee" == "22.75"]; then
+            echo "Test calculate-fee successful"
+          else
+            echo "Test failed: expected 22.75 but was $fee"
+            exit 1
+          fi
+        
+
+
