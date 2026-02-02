@@ -54,6 +54,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$PAYLOAD_FEE" \
             $API_URL/calculate-fee | tee response_fee.txt
+          fee=$(cat response_fee.txt)
+          echo "fee=$fee"
           fee=$(cat response_fee.txt | jq -r '.delivery_fee')
           if [ "$fee" == "$RESP_FEE" ]; then
             echo "Test calculate-fee successful"
