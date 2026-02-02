@@ -38,8 +38,10 @@ jobs:
           set -e
           sleep 5
           curl -sS -w "%output{response.txt}" $API_URL | tee http_code.txt
+          code=$(cat http_code.txt)
+          echo "code=$code"
           msg=$(cat response.txt | jq -r '.message')
-          echo "$msg"
+          echo "msg=$msg"
           if [ "$msg" != "Welcome to the DoorDash Delivery Fee Service API" ]; then
             echo "Wrong banner for API" >&2
             exit 1
