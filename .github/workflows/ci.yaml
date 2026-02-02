@@ -19,27 +19,14 @@ jobs:
       RESP_FEE: "22.75"
       BUILD_TAG: ""
 
-    #steps:
-    #  - name: Checkout repository
-    #    uses: actions/checkout@v4 # This action clones the content of the current repo into the remote runner
-    
-      #- name: Setup Python
-      #  uses: actions/setup-python@v5 # This action installs python (version below)
-      #  with:
-      #    python-version: "3.11"
-
-      
     steps:
-      #- name: Install dependencies
-      #  run: |
-      #    apt update && apt -y upgrade && apt -y install docker.io
-        #  run: pip install -r requirements.txt # It installs all the necessary dependencies from requirements.txt
+      - name: Checkout repository
+        uses: actions/checkout@v4 # This action clones the content of the current repo into the remote runner
 
-      - uses: actions/checkout@v4
       - name: Build the Docker image
         run: |
           BUILD_TAG=$(date +%s)
-          docker build . -t delivery-fee-service         
+          docker build . -t delivery-fee-service
 
       - name: Run de l'image docker
         run: |
@@ -49,6 +36,7 @@ jobs:
       - name: Test API
         run: |
           set -e
+          sleep 5
           curl -sS -w "%output{response.txt}" $API_URL | tee http_code.txt
           msg=$(cat response.txt)
           echo "$msg"
@@ -67,12 +55,28 @@ jobs:
             -d "$PAYLOAD_FEE"
             -w "%output{response_fee.txt}" $API_URL/calculate-fee)
           fee=$(echo $resp | jq -r '.delivery_fee')
-          if [ "$fee" == "$RESP_FEE"]; then
+          if [ "$fee" == "$RESP_FEE" ]; then
             echo "Test calculate-fee successful"
           else
             echo "Test failed: expected $RESP_FEE but was $fee"
             exit 1
           fi
-        
+
+      - name: Setup Python
+        uses: actions/setup-python@v5 # This action installs python (version below)
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r tests/requirements.txt # It installs all the necessary dependencies from requirements.txt
+
+      - name: Run unit test
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/
+
+      - name: Show container logs (for debugging)
+        if: always()
+        run: docker logs fee-service || true
 
 
