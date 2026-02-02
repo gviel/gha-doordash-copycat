@@ -16,7 +16,7 @@ jobs:
     env:
       API_URL: "http://localhost:8080"
       PAYLOAD_FEE: '{ "distance_km": 10.5, "weight_kg": 2.0}'
-      RESP_FEE: "22.75"
+      RESP_FEE: "21.75"
       BUILD_TAG: ""
 
     steps:
