@@ -16,7 +16,7 @@ jobs:
     env:
       API_URL: "http://localhost:8080"
       PAYLOAD_FEE: '{ "distance_km": 10.5, "weight_kg": 2.0}'
-
+      BUILD_TAG: ""
 
     #steps:
     #  - name: Checkout repository
@@ -37,11 +37,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build the Docker image
         run: |
-          docker build . -t doordash/delivery-fee-service:$(date +%s)
+          BUILD_TAG=$(date +%s)
+          docker build . -t doordash/delivery-fee-service:$BUILD_TAG          
 
       - name: Run de l'image docker
         run: |
-          docker run -d -p 8080:8080 doordash/delivery-fee-service
+          docker run -d -p 8080:8080 doordash/delivery-fee-service:latest
 
       - name: Test API
         run: |
