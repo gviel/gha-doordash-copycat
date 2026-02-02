@@ -38,11 +38,11 @@ jobs:
       - name: Build the Docker image
         run: |
           BUILD_TAG=$(date +%s)
-          docker build . -t doordash/delivery-fee-service:$BUILD_TAG          
+          docker build . -t delivery-fee-service         
 
       - name: Run de l'image docker
         run: |
-          docker run -d -p 8080:8080 doordash/delivery-fee-service:latest
+          docker run -d -p 8080:8080 delivery-fee-service
 
       - name: Test API
         run: |
