@@ -16,6 +16,7 @@ jobs:
     env:
       API_URL: "http://localhost:8080"
       PAYLOAD_FEE: '{ "distance_km": 10.5, "weight_kg": 2.0}'
+      RESP_FEE: "22.75"
       BUILD_TAG: ""
 
     #steps:
@@ -43,6 +44,7 @@ jobs:
       - name: Run de l'image docker
         run: |
           docker run -d -p 8080:8080 delivery-fee-service
+          echo "BUILD_TAG=$BUILD_TAG"
 
       - name: Test API
         run: |
@@ -65,10 +67,10 @@ jobs:
             -d "$PAYLOAD_FEE"
             -w "%output{response_fee.txt}" $API_URL/calculate-fee)
           fee=$(echo $resp | jq -r '.delivery_fee')
-          if [ "$fee" == "22.75"]; then
+          if [ "$fee" == "$RESP_FEE"]; then
             echo "Test calculate-fee successful"
           else
-            echo "Test failed: expected 22.75 but was $fee"
+            echo "Test failed: expected $RESP_FEE but was $fee"
             exit 1
           fi
         
