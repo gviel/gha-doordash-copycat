@@ -27,10 +27,12 @@ jobs:
       #  with:
       #    python-version: "3.11"
 
-      #- name: Install dependencies
-      #  run: pip install -r requirements.txt # It installs all the necessary dependencies from requirements.txt
-    
+      
     steps:
+      - name: Install dependencies
+        run: apt update && apt -y upgrade && apt -y install docker.io
+        #  run: pip install -r requirements.txt # It installs all the necessary dependencies from requirements.txt
+
       - uses: actions/checkout@v4
       - name: Build the Docker image
         run: docker build . --tag doordash/delivery-fee-service:$(date +%s)
@@ -39,7 +41,7 @@ jobs:
         run: |
           docker run -d -p 8080:8080 doordash/delivery-fee-service
 
-      - name: Test API 
+      - name: Test API
         run: |
           set -e
           curl -sS -o /dev/null -w "%output{response.txt}" $API_URL | tee http_code.txt
